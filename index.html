@@ -38,7 +38,8 @@
           </div>
         </div>
         <div class="security-indicator">
-          <div id="security-indicator-bar" class="bar" style="width: 90%"></div>
+          <div id="security-indicator-bar" 
+          class="bar safe"></div>
         </div>
       </section>
 
@@ -83,12 +84,34 @@
     </main>
     <script>
       const inputEl = document.querySelector("#password")
+      const uppercasecheckE1 = document.querySelector("#uppercase-check")
+      const numbercheckE1 = document.querySelector("#number-check")
+      const symbolcheckE1 = document.querySelector("#symbol-check")
+      const securityIndicatorBarE1 = document.querySelector("#security-indicator-bar")
 
       let passwordLength = 16
-
+      
       function generatePassword() {
-        const chars =
-          "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789?!@&*()[]"
+        let chars =
+          "abcdefghjkmnpqrstuvwxyz"
+
+          const upperCaseChars = "ABCDEFGHJKLMNPQRSTUVWXYZ"
+          const numberChars = "123456789"
+          const symbolChars = "?!@&*()[]"
+          
+          if (uppercasecheckE1.checked) {
+            chars += upperCaseChars
+
+          }
+          
+          if (numbercheckE1.checked) {
+            chars += numberChars
+          }
+
+          if (symbolcheckE1.checked) {
+            chars += symbolChars
+          }
+
 
         let password = ""
 
@@ -98,20 +121,93 @@
         }
 
         inputEl.value = password
+
+        calculateQuality()
+        calculateFontSize()
+      }
+
+      function calculateQuality() {
+        const percent = Math.round((passwordLength / 64) * 25 + (uppercasecheckE1.checked ? 15 : 0) + (numbercheckE1.checked ? 25 : 0) + (symbolcheckE1.checked ? 35 : 0))
+
+        console.log(percent)
+
+        securityIndicatorBarE1.style.width = `${percent}%`
+
+        if (percent > 69){
+          securityIndicatorBarE1.classList.remove("critical")
+          securityIndicatorBarE1.classList.remove("warning")
+          securityIndicatorBarE1.classList.add("safe")
+        } else if (percent > 50) {
+          securityIndicatorBarE1.classList.remove("critical")
+          securityIndicatorBarE1.classList.add("warning")
+          securityIndicatorBarE1.classList.remove("safe")
+        } else {
+          securityIndicatorBarE1.classList.add("critical")
+          securityIndicatorBarE1.classList.remove("warning")
+          securityIndicatorBarE1.classList.remove("safe")
+        }
+
+        if (percent >= 100) {
+          securityIndicatorBarE1.classList.add("completed")
+        } else {
+          securityIndicatorBarE1.classList.remove("completed")
+        }
+      }
+
+      function calculateFontSize() {
+        if(passwordLength > 45) {
+          inputEl.classList.remove("font-sm")
+          inputEl.classList.remove("font-xs")
+          inputEl.classList.add("font-xxs")
+
+        } else if (passwordLength > 32) {
+          inputEl.classList.remove("font-sm")
+          inputEl.classList.add("font-xs")
+          inputEl.classList.remove("font-xxs")
+
+        } else if (passwordLength > 22 ) {
+          inputEl.classList.add("font-sm")
+          inputEl.classList.remove("font-xs")
+          inputEl.classList.remove("font-xxs")
+
+        } else {
+          inputEl.classList.remove("font-sm")
+          inputEl.classList.remove("font-xs")
+          inputEl.classList.remove("font-xxs")
+
+        }
       }
 
       function copy() {
-        navigator.clipboard.writeText(inputEl.value)
+        const password = inputEl.value;
+
+        if (password){
+          navigator.clipboard.writeText(password).then(() => {
+            alert("Senha copiada para a área de transferência!");
+          }).catch((err) => {
+            alert("Erro ao copiar a senha.");
+            console.error(err);
+          });
+        } else {
+          alert("Nada para copiar!")
+        }
+        
       }
 
       const passwordLengthEl = document.querySelector("#password-length")
       passwordLengthEl.addEventListener("input", function () {
         passwordLength = passwordLengthEl.value
+        document.querySelector('#password-length-text').innerText = passwordLength
         generatePassword()
       })
 
+      uppercasecheckE1.addEventListener("click", generatePassword)
+      numbercheckE1.addEventListener("click", generatePassword)
+      symbolcheckE1.addEventListener("click", generatePassword)
+
       document.querySelector("#copy-1").addEventListener("click", copy)
       document.querySelector("#copy-2").addEventListener("click", copy)
+      document.querySelector("#renew").addEventListener("click", generatePassword)
 
       generatePassword()
     </script>
