@@ -18,13 +18,6 @@ Este é um projeto simples e funcional de **gerador de senhas seguras**, desenvo
 
 ---
 
-## 🖼️ Prévia
-
-![preview](caminho/para/imagem.png)  
-*Você pode adicionar uma imagem do sistema aqui.*
-
----
-
 ## 🧱 Tecnologias Utilizadas
 
 - HTML5
